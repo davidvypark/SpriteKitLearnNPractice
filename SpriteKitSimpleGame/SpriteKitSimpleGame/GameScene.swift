@@ -10,7 +10,6 @@ import SpriteKit
 import GameplayKit
 
 
-
 struct PhysicsCategory {
     static let None         : UInt32 = 0
     static let All          : UInt32 = UInt32.max
@@ -57,6 +56,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     let player = SKSpriteNode(imageNamed: "player")
     var monstersDestroyed = 0
+    //var scoreCount = 0                             // I dont need this anymore scoreCount on global.swift
+    var scoreLabel = SKLabelNode()                          // Declaring score
+    let scoreLabelName = "scoreLabel"                       // label variables
     
     override func didMoveToView(view: SKView) {
         
@@ -67,11 +69,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         physicsWorld.gravity = CGVectorMake(0, 0)
         physicsWorld.contactDelegate = self
         
+        
         runAction(SKAction.repeatActionForever(SKAction.sequence([SKAction.runBlock(addMonster),SKAction.waitForDuration(1.0)])))
         
         let backgroundMusic = SKAudioNode(fileNamed: "background-music-aac")
         backgroundMusic.autoplayLooped = true
         addChild(backgroundMusic)
+        
+        //implementation of score label    <--------------------------------------------------------
+        
+        scoreLabel = SKLabelNode(fontNamed: "Chalkduster")
+        scoreLabel.name = scoreLabelName
+        scoreLabel.fontSize = 80
+        scoreLabel.fontColor = SKColor.blackColor()
+        scoreLabel.text = "\(mainInstance.scoreCount)"
+        print(size.height)
+        scoreLabel.position = CGPointMake(frame.size.width / 2, frame.size.height / 14)
+        self.addChild(scoreLabel)
+        
+    }
+    
+    func updateScoreLabel(){
+        mainInstance.scoreCount += 1
+        scoreLabel.text = "\(mainInstance.scoreCount)"
     }
     
     func random() -> CGFloat{
@@ -153,11 +173,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         monster.removeFromParent()
         
         monstersDestroyed += 1
-        if (monstersDestroyed > 30) {
-            let reveal = SKTransition.flipHorizontalWithDuration(0.5)
-            let gameOverScene = GameOverScene(size: self.size, won:true)
-            self.view?.presentScene(gameOverScene, transition: reveal)
-        }
+        
+        updateScoreLabel()
+        
+        //if (monstersDestroyed > 30) {
+        //    let reveal = SKTransition.flipHorizontalWithDuration(0.5)         //This is a potential
+        //    let gameOverScene = GameOverScene(size: self.size, won:true)      //win condition that
+        //    self.view?.presentScene(gameOverScene, transition: reveal)        //I'm not using right now
+        //}
     }
     
     func didBeginContact(contact: SKPhysicsContact) {

@@ -17,7 +17,7 @@ class GameOverScene: SKScene {
         
         backgroundColor = SKColor.whiteColor()
         
-        let message = won ? "(っ◕‿◕)っ You Won!" : "You Lose (ಥ﹏ಥ) "
+        let message = won ? "(っ◕‿◕)っ You Won! " : "(ಥ﹏ಥ) Score: \(mainInstance.scoreCount)" //the "won"  condition message will never be triggered because I turned off the win condition
         
         let label = SKLabelNode(fontNamed: "Chalkduster")
         label.text = message
@@ -25,8 +25,11 @@ class GameOverScene: SKScene {
         label.fontColor = SKColor.blackColor()
         label.position = CGPoint(x: size.width/2, y: size.height/2)
         addChild(label)
+
+        
         
         runAction(SKAction.sequence([SKAction.waitForDuration(3.0), SKAction.runBlock(){
+            mainInstance.scoreCount = 0
             let reveal = SKTransition.flipHorizontalWithDuration(0.5)
             let scene = GameScene(size: size)
             self.view?.presentScene(scene, transition:reveal)
